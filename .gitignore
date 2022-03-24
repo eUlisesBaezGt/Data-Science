@@ -1,6 +1,10 @@
 dsProject/
 .DS_Store/
+<<<<<<< HEAD
 
+=======
+.gitignore/
+>>>>>>> 74ff1f0b5ea8aa1d23c2f881c1138f0cf5f5c7c2
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
