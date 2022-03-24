@@ -1,6 +1,6 @@
-dsProject
-.DS_Store
-.gitignore
+dsProject/
+.DS_Store/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
