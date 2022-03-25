@@ -1,5 +1,6 @@
 import tkinter
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg, NavigationToolbar2Tk)
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
@@ -15,188 +16,168 @@ def prSetTxt(pTxt, pVal):
 
 
 class PlotWin:
-    def _getLog(self):
-        c = 0
+
+    def get_log(self):
+        n = 0
         if os.path.isfile(self.path):
-            lFile = open(self.path, "r")
+            read_file = open(self.path, "r")
+
             if os.stat(self.path).st_size != 0:
-                for lin in lFile:
-                    ind = "ind: " + str(c)
-                    c += 1
-                    self.txtLog.insert(tkinter.END, ind)
-                    self.txtLog.insert(tkinter.END, "\n")
-                    lin = json.loads(lin)
+
+                for line in read_file:
+
+                    id = "#: " + str(n)
+                    n += 1
+                    self.log.insert(tkinter.END, id)
+                    self.log.insert(tkinter.END, "\n")
+                    line = json.loads(line)
+
                     for i in range(4):
-                        self.txtLog.insert(tkinter.END, lin[1][i][0])
-                        self.txtLog.insert(tkinter.END, str(lin[1][i][1]))
-                        self.txtLog.insert(tkinter.END, "\n")
-                    self.txtLog.insert(tkinter.END, "\n")
-                lFile.close()
+
+                        self.log.insert(tkinter.END, line[1][i][0])
+                        self.log.insert(tkinter.END, str(line[1][i][1]))
+                        self.log.insert(tkinter.END, "\n")
+                    self.log.insert(tkinter.END, "\n")
+
+                read_file.close()
 
     def createWindow(self):
         self.window = tkinter.Tk()
+        self.window.title("GRAPHS")
+        self.window.geometry("800x600")
 
-        self.window.title("Plot")
-        self.window.geometry("550x350+100+200")
+        self.scrlbr = tkinter.Scrollbar(self.window)
+        self.scrlbr.pack(side=tkinter.RIGHT, fill=tkinter.Y)
 
-        self.frame = tkinter.LabelFrame(self.window, text="Historial", pady=20)
-        self.frame.place(x=415, y=10)
+        self.hrz_scrlbr = tkinter.Scrollbar(self.window, orient="horizontal")
+        self.hrz_scrlbr.pack(side=tkinter.BOTTOM, fill=tkinter.X)
 
-        self.sbLog = tkinter.Scrollbar(self.window)
-        self.sbLog.pack(side=tkinter.RIGHT, fill=tkinter.Y)
-        self.bsbLog = tkinter.Scrollbar(self.window, orient="horizontal")
-        self.bsbLog.pack(side=tkinter.BOTTOM, fill=tkinter.X)
-        self.txtLog = tkinter.Text(self.window, bg="lightgray", width=64, height=9,
-                                   wrap=tkinter.NONE, xscrollcommand=self.bsbLog.set, yscrollcommand=self.sbLog.set)
-        self.txtLog.place(x=10, y=170)
-        self.sbLog.config(command=self.txtLog.yview)
+        self.log = tkinter.Text(self.window, bg="lightblue", width=64, height=9,
+                                wrap=tkinter.NONE, xscrollcommand=self.hrz_scrlbr.set, yscrollcommand=self.scrlbr.set)
+        self.log.place(x=10, y=170)
 
-        self.lblHist = tkinter.Label(self.window, text="Acceder a historial", font=('bold', 10))
-        self.lblHist.place(x=415, y=10)
-        self.lblInd = tkinter.Label(self.window, text="ind:")
-        self.lblInd.place(x=415, y=40)
-        self.txtInd = tkinter.Entry(self.window, bg="lightgray", width=10)
-        self.txtInd.place(x=460, y=40)
-        self.btnFnd = tkinter.Button(self.window, text="Buscar", command=self.btnFnd_click)
-        self.btnFnd.place(x=460, y=65)
+        self.scrlbr.config(command=self.log.yview)
 
-        self.btnClear = tkinter.Button(self.window, fg="red", text="Borrar historial", command=self.btnClear_click,
-                                       width=15)
-        self.btnClear.place(x=415, y=100)
+        self.lower_limit_lbl = tkinter.Label(self.window, text='Lower Limit')
+        self.lower_limit_lbl.place(x=10, y=10)
 
-        self.lblInf = tkinter.Label(self.window, text='Lim. Inf.= ')
-        self.lblInf.place(x=10, y=10)
-        self.txtInf = tkinter.Entry(self.window, bg="lightgray", width=50)
-        self.txtInf.place(x=75, y=10)
+        self.lw_txt = tkinter.Entry(self.window, bg="lightblue", width=50)
+        self.lw_txt.place(x=75, y=10)
 
-        self.lblSup = tkinter.Label(self.window, text='Lim. Sup.= ')
-        self.lblSup.place(x=10, y=40)
-        self.txtSup = tkinter.Entry(self.window, bg="lightgray", width=50)
-        self.txtSup.place(x=75, y=40)
+        self.upper_limit_lbl = tkinter.Label(self.window, text='Upper Limit')
+        self.upper_limit_lbl.place(x=10, y=40)
 
-        self.lblStep = tkinter.Label(self.window, text='Step= ')
-        self.lblStep.place(x=10, y=70)
-        self.txtStep = tkinter.Entry(self.window, bg="lightgray", width=50)
-        self.txtStep.place(x=75, y=70)
+        self.up_txt = tkinter.Entry(self.window, bg="lightblue", width=50)
+        self.up_txt.place(x=75, y=40)
 
-        self.lbl01 = tkinter.Label(self.window, text="Z= ")
-        self.lbl01.place(x=10, y=100)
-        self.txt01 = tkinter.Entry(self.window, bg="lightgray", width=50)
-        self.txt01.place(x=75, y=100)
+        self.step_lbl = tkinter.Label(self.window, text='Step')
+        self.step_lbl.place(x=10, y=70)
 
-        self.btn01 = tkinter.Button(self.window, text="Muestra", command=self.btn01_click)
+        self.step_txt = tkinter.Entry(self.window, bg="lightblue", width=50)
+        self.step_txt.place(x=75, y=70)
 
-        self.btn01.place(x=10, y=130, width=75)
+        self.function_lbl = tkinter.Label(self.window, text="Function")
+        self.function_lbl.place(x=10, y=100)
 
-        self.path = "PATH"
-        idx2 = -1
-        datosJson = ""
+        self.fnc_txt = tkinter.Entry(self.window, bg="lightblue", width=50)
+        self.fnc_txt.place(x=75, y=100)
+
+        self.show_btn = tkinter.Button(
+            self.window, text="SHOW", command=self.show_btn_click)
+        self.show_btn.place(x=600, y=130, width=75)
+
+        self.path = "./log.txt"
+
+        aux = -1
+        all_json = ""
 
         if os.path.isfile(self.path):
-            archivo = open(self.path, "r")
-            if os.stat(self.path).st_size != 0:
-                for linea in archivo:
-                    if (json.loads(linea)[0] > idx2):
-                        idx2 = json.loads(linea)[0]
-                        datosJson = linea
-                datos = json.loads(datosJson)
-                prSetTxt(self.txtInf, str(datos[1][1][1]))
-                prSetTxt(self.txtSup, str(datos[1][2][1]))
-                prSetTxt(self.txtStep, str(datos[1][3][1]))
-                prSetTxt(self.txt01, datos[1][0][1])
-            archivo.close()
+            file = open(self.path, "r")
 
-        self._getLog()
+            if os.stat(self.path).st_size != 0:
+
+                for line in file:
+
+                    if (json.loads(line)[0] > aux):
+
+                        aux = json.loads(line)[0]
+                        all_json = line
+
+                data = json.loads(all_json)
+                prSetTxt(self.lw_txt, str(data[1][1][1]))
+                prSetTxt(self.up_txt, str(data[1][2][1]))
+                prSetTxt(self.step_txt, str(data[1][3][1]))
+                prSetTxt(self.fnc_txt, data[1][0][1])
+
+            file.close()
+
+        self.get_log()
         self.window.mainloop()
 
-    def showPlot(self, pFunc, pInf, pSup, pStep):
-        idx = -1
+    def showPlot(self, fnc, lw, up, stp):
+        aux = -1
         if os.path.isfile(self.path):
-            archivo = open(self.path, "rt")
+
+            file = open(self.path, "r")
             if os.stat(self.path).st_size != 0:
-                for linea in archivo:
-                    if (json.loads(linea)[0] > idx):
-                        idx = json.loads(linea)[0]
 
-        lista = [(idx + 1), [["Funcion: ", str(pFunc)], ["Limite inferior: ", pInf], ["Limite superior: ", pSup],
-                             ["Step: ", pStep]]]
+                for line in file:
 
-        self.txtLog.insert(tkinter.END, ("ind: " + str(idx + 1) + "\n"))
+                    if (json.loads(line)[0] > aux):
+
+                        aux = json.loads(line)[0]
+
+        coll = [(aux+1), [["Function: ", str(fnc)], ["Lower Limit: ",
+                                                     lw], ["Upper Limit: ", up], ["Step: ", stp]]]
+
+        self.log.insert(tkinter.END, ("id: " + str(aux+1)+"\n"))
+
         for i in range(4):
-            self.txtLog.insert(tkinter.END, lista[1][i][0])
-            self.txtLog.insert(tkinter.END, str(lista[1][i][1]))
-            self.txtLog.insert(tkinter.END, "\n")
-        self.txtLog.insert(tkinter.END, "\n")
 
-        listaJson = json.dumps(lista)
+            self.log.insert(tkinter.END, coll[1][i][0])
+            self.log.insert(tkinter.END, str(coll[1][i][1]))
+            self.log.insert(tkinter.END, "\n")
+
+        self.log.insert(tkinter.END, "\n")
+
+        all_json = json.dumps(coll)
+
         if os.path.isfile(self.path):
-            archivo = open(self.path, "a")
-            archivo.write(listaJson)
-            archivo.write("\r")
-            archivo.close()
+            file = open(self.path, "a")
+            file.write(all_json)
+            file.write("\r")
+            file.close()
 
-        XVec = np.arange(pInf, pSup, pStep)
-        XSize = XVec.size
-        YVec = np.arange(pInf, pSup, pStep)
-        YSize = YVec.size
+        xs = np.arange(lw, up, stp)
+        xs_sz = xs.size
+        ys = np.arange(lw, up, stp)
+        ys_sz = ys.size
 
-        ZMat = np.zeros((XSize, YSize))
+        zrs = np.zeros((xs_sz, ys_sz))
 
-        for XIdx in range(0, XSize):
-            for YIdx in range(0, YSize):
-                X = XVec[XIdx]
-                Y = YVec[YIdx]
-                Z = eval(pFunc)
-                ZMat[XIdx, YIdx] = Z
+        for i in range(0, xs_sz):
+            for j in range(0, ys_sz):
+                X = xs[i]
+                Y = ys[j]
+                Z = eval(fnc)
+                zrs[i, j] = Z
 
-        XVecG, YVecG = np.meshgrid(XVec, YVec)
+        xv, yv = np.meshgrid(xs, ys)
 
-        lFig = Figure(figsize=(5, 4), dpi=100)  # espacio para pintar
-        lAxis = Axes3D(lFig)  # cuántos renglones y columnas, ahora es gráfica grande. renglón, columna, profundidad
-        lAxis.plot_surface(XVecG, YVecG, ZMat, rstride=1, cstride=1, cmap='plasma')
+        fig = Figure(figsize=(10, 8), dpi=150)
+        Axis = Axes3D(fig)
+        Axis.plot_surface(xv, yv, zrs, rstride=1, cstride=1, cmap='plasma')
 
-        lWin = tkinter.Tk()
-        lWin.title(pFunc)
-        canvas = FigureCanvasTkAgg(lFig, master=lWin)
+        W = tkinter.Tk()
+        W.title(fnc)
+        canvas = FigureCanvasTkAgg(fig, master=W)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
 
-        # lPlane.show()
-
-    # showPlot. pinta en un archivo gráfico
-
-    def btn01_click(self):
-        self.showPlot(self.txt01.get(), float(self.txtInf.get()), float(self.txtSup.get()), float(self.txtStep.get()))
-
-    def btnFnd_click(self):
-        ind = int(self.txtInd.get())
-        found = False
-        if os.path.isfile(self.path):
-            archivo = open(self.path, "rt")
-            for linea in archivo:
-                lin = json.loads(linea)
-                if (lin[0] == ind):
-                    self.showPlot(lin[1][0][1], lin[1][1][1], lin[1][2][1], lin[1][3][1])
-                    prSetTxt(self.txtInf, str(lin[1][1][1]))
-                    prSetTxt(self.txtSup, str(lin[1][2][1]))
-                    prSetTxt(self.txtStep, str(lin[1][3][1]))
-                    prSetTxt(self.txt01, lin[1][0][1])
-        if found == False:
-            self.txtLog.insert(tkinter.END, "No se encro esa operacion")
-            self.txtLog.insert(tkinter.END, "\n")
-
-    def btnClear_click(self):
-        if os.path.isfile(self.path):
-            archivo = open(self.path, "wt")
-            archivo.write("")
-        self.txtLog.delete('1.0', tkinter.END)
-    # btn01_click
+    def show_btn_click(self):
+        self.showPlot(self.fnc_txt.get(), float(self.lw_txt.get()),
+                      float(self.up_txt.get()), float(self.step_txt.get()))
 
 
-# PlotWin
-
-myPlotWin = PlotWin()
-myPlotWin.createWindow()
-
-
-#%%
+plot = PlotWin()
+plot.createWindow()

@@ -1,6 +1,10 @@
 dsProject/
 .idea/
 .DS_Store/
+.git/
+.vscode/
+
+.gitignore
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

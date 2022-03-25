@@ -1,0 +1,1 @@
+[0, [["Function: ", "X"], ["Lower Limit: ", -5.0], ["Upper Limit: ", 5.0], ["Step: ", 0.2]]]
