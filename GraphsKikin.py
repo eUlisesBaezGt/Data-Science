@@ -1,21 +1,35 @@
 import tkinter
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
 import numpy as np
-from math import *
 import json
 import os
 
 
-def prSetTxt(pTxt, pVal):
-    pTxt.delete(0, len(pTxt.get()))
-    pTxt.insert(0, pVal)
+def set_txt(txt, val):
+    txt.delete(0, len(txt.get()))
+    txt.insert(0, val)
 
 
 class PlotWin:
+
+    def __init__(self):
+        self.path = None
+        self.W = None
+        self.upper_limit_lbl = None
+        self.lw_txt = None
+        self.up_txt = None
+        self.step_lbl = None
+        self.step_txt = None
+        self.function_lbl = None
+        self.fnc_txt = None
+        self.show_btn = None
+        self.lower_limit_lbl = None
+        self.log = None
+        self.hrz_scrlbr = None
+        self.scrlbr = None
+        self.window = None
 
     def get_log(self):
         n = 0
@@ -41,7 +55,7 @@ class PlotWin:
 
                 read_file.close()
 
-    def createWindow(self):
+    def create_window(self):
         self.window = tkinter.Tk()
         self.window.title("GRAPHS")
         self.window.geometry("800x600")
@@ -98,23 +112,23 @@ class PlotWin:
 
                 for line in file:
 
-                    if (json.loads(line)[0] > aux):
+                    if json.loads(line)[0] > aux:
 
                         aux = json.loads(line)[0]
                         all_json = line
 
                 data = json.loads(all_json)
-                prSetTxt(self.lw_txt, str(data[1][1][1]))
-                prSetTxt(self.up_txt, str(data[1][2][1]))
-                prSetTxt(self.step_txt, str(data[1][3][1]))
-                prSetTxt(self.fnc_txt, data[1][0][1])
+                set_txt(self.lw_txt, str(data[1][1][1]))
+                set_txt(self.up_txt, str(data[1][2][1]))
+                set_txt(self.step_txt, str(data[1][3][1]))
+                set_txt(self.fnc_txt, data[1][0][1])
 
             file.close()
 
         self.get_log()
         self.window.mainloop()
 
-    def showPlot(self, fnc, lw, up, stp):
+    def show_plot(self, fnc, lw, up, stp):
         aux = -1
         if os.path.isfile(self.path):
 
@@ -123,7 +137,7 @@ class PlotWin:
 
                 for line in file:
 
-                    if (json.loads(line)[0] > aux):
+                    if json.loads(line)[0] > aux:
 
                         aux = json.loads(line)[0]
 
@@ -165,19 +179,19 @@ class PlotWin:
         xv, yv = np.meshgrid(xs, ys)
 
         fig = Figure(figsize=(10, 8), dpi=150)
-        Axis = Axes3D(fig)
-        Axis.plot_surface(xv, yv, zrs, rstride=1, cstride=1, cmap='plasma')
+        axis = Axes3D(fig)
+        axis.plot_surface(xv, yv, zrs, rstride=1, cstride=1, cmap='plasma')
 
-        W = tkinter.Tk()
-        W.title(fnc)
-        canvas = FigureCanvasTkAgg(fig, master=W)
+        w = tkinter.Tk()
+        w.title(fnc)
+        canvas = FigureCanvasTkAgg(fig, master=w)
         canvas.draw()
         canvas.get_tk_widget().pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
 
     def show_btn_click(self):
-        self.showPlot(self.fnc_txt.get(), float(self.lw_txt.get()),
-                      float(self.up_txt.get()), float(self.step_txt.get()))
+        self.show_plot(self.fnc_txt.get(), float(self.lw_txt.get()),
+                       float(self.up_txt.get()), float(self.step_txt.get()))
 
 
 plot = PlotWin()
-plot.createWindow()
+plot.create_window()
