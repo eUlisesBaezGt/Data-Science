@@ -57,7 +57,7 @@ class PlotWin:
 
     def create_window(self):
         self.window = tkinter.Tk()
-        self.window.title("GRAPHS")
+        self.window.title("GRAPHS KIKIN")
         self.window.geometry("800x600")
 
         self.scrlbr = tkinter.Scrollbar(self.window)
